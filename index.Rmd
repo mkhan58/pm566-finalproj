@@ -69,7 +69,7 @@ p2_scatter <- cv_states_today_scatter %>%
 
 ```{r echo=FALSE}
 p1_scatter
-```
+``` 
 
 ### Tab 2
 
