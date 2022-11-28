@@ -36,31 +36,24 @@ opts_chunk$set(
 ```
 
 ```{r}
-source("process_COVID_data.R")
-p1_scatter <- cv_states_today %>% 
-  plot_ly(x = ~pop_density, y = ~deathsper100k,
-          type = 'scatter', mode = 'markers', color = ~state,
-          size = ~population, sizes = c(5, 70), marker = list(sizemode='diameter', opacity=0.5),
-          hoverinfo = 'text',
-          text = ~paste( paste(state, ":", sep=""), paste(" Cases per 100k: ", per100k, sep="") , paste(" Deaths per 100k: ",
-                        deathsper100k, sep=""), sep = "<br>")) %>%
-  layout(title = "Population-normalized COVID-19 deaths vs. population density",
-                  yaxis = list(title = "Deaths per 100k"), xaxis = list(title = "Population Density"),
-         hovermode = "compare")
+source("pm566-midterm-final-copy.R")
 
-# filter out "District of Columbia"
-cv_states_today_scatter <- cv_states_today %>% filter(state!="District of Columbia")
+crime_count_month <-  
+  crimedat %>%
+  group_by(Month, Year, Area) %>% 
+  summarize(CrimeCount = n()) 
 
-p2_scatter <- cv_states_today_scatter %>% 
-  plot_ly(x = ~pop_density, y = ~deathsper100k,
-          type = 'scatter', mode = 'markers', color = ~state,
-          size = ~population, sizes = c(5, 70), marker = list(sizemode='diameter', opacity=0.5),
-          hoverinfo = 'text',
-          text = ~paste( paste(state, ":", sep=""), paste(" Cases per 100k: ", per100k, sep="") , paste(" Deaths per 100k: ",
-                        deathsper100k, sep=""), sep = "<br>")) %>%
-  layout(title = "Population-normalized COVID-19 deaths vs. population density",
-                  yaxis = list(title = "Deaths per 100k"), xaxis = list(title = "Population Density"),
-         hovermode = "compare")
+crime_count_month <- subset(crime_count_month, 
+                            Year %in% c("2020", "2021")) #2022 is still in progress
+
+#Order months in order for graph
+month.ordered <- 
+  crime_count_month %>%
+  mutate(Month = factor(Month, levels = c("Jan", "Feb", "Mar", "Apr", "May",  "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")))
+
+month.ordered  %>%
+  ggplot(aes(x = Month, y = CrimeCount, fill = Area)) +
+  geom_bar(stat = "identity")
 ```
 
 ## Showcasing plots {.tabset}
@@ -68,13 +61,13 @@ p2_scatter <- cv_states_today_scatter %>%
 ### Tab 1
 
 ```{r echo=FALSE}
-p1_scatter
+month.ordered
 ``` 
 
 ### Tab 2
 
 ```{r echo=FALSE}
-p2_scatter
+#p2_scatter
 ```
 
 ## {-}
