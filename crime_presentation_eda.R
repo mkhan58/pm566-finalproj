@@ -25,34 +25,44 @@ opts_chunk$set(
 crimedat <- read_rds("crimedatfinal.rds")
 crimedat <- as.data.frame(crimedat)
 
-#Loop for Crime Count
-# Add variables for new_cases and new_deaths:
+###Loop for Crime Count###
+# Add variables for cases
+
+#Create list of Areas (following lab)
 crime_list <- unique(crimedat$Area)
-crime_frequency <- count(crimedat, Area)
+
 for (i in 1:length(crime_list)) {
   crime_subset = subset(crimedat, Area == crime_list[i])
   crime_subset = crime_subset[order(crime_subset$`Date Occurred`),]
   # add starting level for new cases and deaths
   crime_subset$Cases = crime_subset$Crime[1]
   for (j in 2:nrow(crime_subset)) {
-    crime_subset$crime_frequency[j] = crime_subset$crime_frequency[j] - crime_subset$crime_frequency[j-1]
+    crime_subset$Crime[j] = crime_subset$Crime[j] - crime_subset$Crime[j-1]
   }
   # include in main dataset
   crimedat$Cases[crimedat$Area==crime_list[i]] = crime_subset$Cases
 }
 
+
 #Plot 1
 #crime_frequency <-count(crimedat, Area)
 p1 <- ggplot(crimedat, aes(x = `Date Occurred`, y = Cases, color = Area)) + geom_line() + geom_point(size = .5, alpha = 0.5)
 ggplotly(p1)
+#Output doesnt work
 
 
+
+#Subset of overall crime number per area
+crime_frequency <- count(crimedat, Area)
+
+
+#Other EDA
 #Testing: area vs crime
 p <- crime_frequency %>%
   ggplot( aes(Area, n, size = n, color=Area)) +
   geom_point() +
   theme_bw()
-
+#too scrunched
 
 #Testing: date vs crime
 value <- crime_frequency$n
@@ -61,7 +71,7 @@ q <- crimedat %>%
   geom_area(fill="#69b3a2", alpha=0.5) +
   geom_line(color="#69b3a2") +
   ylab("count") 
-
+#doesn't work
 
 #####################################
 #EDA 1: Victim Demographics
