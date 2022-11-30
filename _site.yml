@@ -1,6 +1,6 @@
 name: "my-website"
 output_dir: "."
-navbar: 
+navbar:  
   title: "PM566 Project: Los Angeles Crime 2020-2021"
   type: inverse
   left:

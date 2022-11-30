@@ -43,7 +43,7 @@ month_crime = plot_ly(ncrimesdate, x = ~Month, y = ~n, color = ~Area, type = "ba
 month_crime <- month_crime %>% layout(yaxis = list(title = 'Count'), barmode = 'stack')
 month_crime <- month_crime %>% layout(title = "Months with the Highest Crime in the Top 5 Areas")
 month_crime_plotly <- ggplotly(month_crime)
-month_crime_plotly 
+
 
 #Viz 2: Most Common Crimes in Top Areas
 top_crime <- ncrimes %>% 
@@ -55,7 +55,7 @@ top_crime <- ncrimes %>%
           marker = list(sizemode='diameter', opacity=0.5))
 top_crime <- top_crime %>% layout(title = "Most Common Crime in Top Areas")
 top_crime_plotly <- ggplotly(top_crime)
-top_crime_plotly
+
 
 #Viz 3: Area with the Highest Crime Map
 central_map <- 
@@ -75,7 +75,7 @@ central_map <-
             values = central_top_crimes$`Crime`,
             title = 'Central Crime Map', 
             opacity = 1)
-central_map
+
 
 #Viz 4: Victim Age and Sex
 vict_demo <-plot_ly(victim_demographics, x = ~victim_age_f, color = ~`Victim Sex`) %>%
@@ -89,7 +89,7 @@ vict_demo <- vict_demo %>% layout(title = "Histogram of Victim's Age and Gender"
                                     title = "Age"
                                   ))
 vict_demo_plotly <- ggplotly(vict_demo)
-vict_demo_plotly
+
 
 ```
 
