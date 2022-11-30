@@ -1,5 +1,5 @@
 ---
-title: "PM566 Final Project"
+title: "Los Angeles Crime 2020-2021"
 author: "Misha Khan"
 output: 
     html_document:
@@ -7,12 +7,37 @@ output:
         toc_float: TRUE
 ---
 
-This is my PM566 Final Project website.
+<br>
+
+# **Introduction**
+For my final project, I selected Los Angeles crime dataset from 2020-2021 to examine local areas with the highest crime,  most common crime, and victim demographics. The original dataset has over 500,000 observations and 19 variables that describe the date, time, crime, weapon, victim, and location. In this presentation, I have displayed the time of year with the highest crime, most common crimes in top areas, and victim demographic breakdown.
 
 <br>
 
-# Question: What is crime like in Los Angeles from 2020-2021 (in terms of highest crime month, victim demographics, and top crimes)?
+# **Data Cleaning**
+### Removing and Reformatting Columns
+The dataset I used was in a .csv file. I renamed the columns and dropped 10 columns that were not relevant for analysis. Then, I reformatted date and time variables to extract month and year and to use them as variables. I also kept 2022 for certain analysis but removed it when it came to examining time analysis since the year is not over yet.
 
+<br>
+
+### Examining Coordinates
+As for coordinates, there were 2,266 coordinates that are (0,0) due to privacy reasons. I decided to drop these rows since the dataset is already large and it would not affect analysis.
+
+<br>
+
+### Empty Cells and Negative Values
+Victim Age had negative values, 0's (meaning not available), and an oddly high value of 120. For simplicity, I filtered age from 0-100 to exclude negative values. This step discarded 25 rows.
+The variables Weapon, Victim Sex, and Victim Ethnicity had thousands of empty cells. For Victim Sex and Ethnicity, I replaced it with NA instead of dropping it because of the amount of observations. I assumed that the information was not given. As for weapon, I assigned the empty cells to "NONE" meaning that no weapon was used.
+
+<br>
+
+### After Cleaning
+After data cleaning, the process removed 2,291 rows. The crimedat dataset now has 584,004 observations and 21 variables.
+
+<br>
+
+# **EDA**
+## When does the most crime occur?
 ```{r setup, message=FALSE, echo=FALSE, warning=FALSE}
 library(data.table)
 library(tidyverse)
@@ -35,52 +60,50 @@ opts_chunk$set(
 
 ```
 
-```{r}
-source("crime_presentation_eda.R")
-
+```{r, message=FALSE, echo=FALSE, warning=FALSE}
 #Viz 1: Months with the Highest Crime in the Top 5 Areas
+source("crime_presentation_eda.R")
 month_crime = plot_ly(ncrimesdate, x = ~Month, y = ~n, color = ~Area, type = "bar")
 month_crime <- month_crime %>% layout(yaxis = list(title = 'Count'), barmode = 'stack')
 month_crime <- month_crime %>% layout(title = "Months with the Highest Crime in the Top 5 Areas")
 month_crime_plotly <- ggplotly(month_crime)
+```
 
+#### Bar Chart {.tabset}
 
-#Viz 2: Most Common Crimes in Top Areas
-top_crime <- ncrimes %>% 
-  plot_ly(x = ~Crime, y = ~n,
-          type = 'scatter',
-          mode = 'markers',
-          color = ~Area,
-          sizes = c(5, 70),
-          marker = list(sizemode='diameter', opacity=0.5))
-top_crime <- top_crime %>% layout(title = "Most Common Crime in Top Areas")
-top_crime_plotly <- ggplotly(top_crime)
+```{r, message=FALSE, echo=FALSE, warning=FALSE}
+month_crime_plotly 
+``` 
+## {-}
+Like mentioned before, 2022 is excluded from this analysis since the year is not over. I selected the top 5 areas with the highest crime and saw that January to June, there are a little under 10,000 reports. In the warmer months, the reports increase over 10,000 and then drop again in November and December.
 
+<br>
 
-#Viz 3: Area with the Highest Crime Map
-central_map <- 
-  leaflet(central_top_crimes) %>%  
-  addProviderTiles('CartoDB.Positron') %>% 
-  addCircles(
-    lat = ~Lat,  
-    lng = ~Lon,
-    label = ~paste0(central_top_crimes$`Crime`),
-    color = ~ central.pal(central_top_crimes$`Crime`),
-    opacity = 0.5,
-    fillOpacity = 1,
-    radius = 5
-  ) %>%
-  addLegend('bottomleft', 
-            pal = central.pal,  
-            values = central_top_crimes$`Crime`,
-            title = 'Central Crime Map', 
-            opacity = 1)
+## What are the most common crimes?
+```{r, message=FALSE, echo=FALSE, warning=FALSE}
+#Viz 1: Months with the Highest Crime in the Top 5 Areas
+source("crime_presentation_eda.R")
+month_crime = plot_ly(ncrimesdate, x = ~Month, y = ~n, color = ~Area, type = "bar")
+month_crime <- month_crime %>% layout(yaxis = list(title = 'Count'), barmode = 'stack')
+month_crime <- month_crime %>% layout(title = "Months with the Highest Crime in the Top 5 Areas")
+month_crime_plotly <- ggplotly(month_crime)
+```
 
+#### Scatter Plot {.tabset}
 
-#Viz 4: Victim Age and Sex
+```{r, message=FALSE, echo=FALSE, warning=FALSE}
+top_crime_plotly 
+``` 
+## {-}
+Once again, I focused on the top 5 areas with the highest crimes. There are two dots for the sum of each year (2020 and 2021). Across the plot, the highest points are from the areas 77th Street and Central. There are over 1,500 reports of burglary from vehicle and vehicle stolen.
+
+<br>
+
+## What is the demographic breakdown of victims?
+```{r, message=FALSE, echo=FALSE, warning=FALSE}
+#Viz 3: Victim Age and Sex
 vict_demo <-plot_ly(victim_demographics, x = ~victim_age_f, color = ~`Victim Sex`) %>%
   add_histogram()
-#vict_demo <- vict_demo %>% layout(barmode = "overlay")
 vict_demo <- vict_demo %>% layout(title = "Histogram of Victim's Age and Gender",
                                   yaxis = list(
                                     title = "Count"
@@ -89,31 +112,46 @@ vict_demo <- vict_demo %>% layout(title = "Histogram of Victim's Age and Gender"
                                     title = "Age"
                                   ))
 vict_demo_plotly <- ggplotly(vict_demo)
-
-
 ```
 
-## Showcasing plots {.tabset}
-
-### Tab 1
-
-```{r echo=FALSE}
-month_crime_plotly 
-```  
-
-### Tab 2
-
-```{r echo=FALSE}
-top_crime_plotly 
+```{r, message=FALSE, echo=FALSE, warning=FALSE}
+#Viz 4: Victim Age and Ethnicity
+vict_demo_eth <-plot_ly(victim_demographics, x = ~victim_age_f, color = ~`Victim Ethnicity`) %>%
+  add_histogram()
+vict_demo_eth <- vict_demo_eth %>% layout(title = "Histogram of Victim's Age and Ethnicity",
+                                  yaxis = list(
+                                    title = "Count"
+                                  ),
+                                  xaxis = list(
+                                    title = "Age"
+                                  ))
+vict_demo_eth_plotly <- ggplotly(vict_demo_eth)
 ```
 
-### Tab 3
-```{r echo=FALSE}
-central_map 
-```
+## {.tabset}
 
-### Tab 4
+### Victim Sex
+
 ```{r echo=FALSE}
 vict_demo_plotly
+```  
+
+### Victim Ethnicity
+
+```{r echo=FALSE}
+vict_demo_eth_plotly 
 ```
+
 ## {-}
+
+From the histogram, there is a noticeable spike in younger women (mid 20s) reporting crimes compared to men. However after 30s, there are more men reporting crime than women. 
+When examining victim's ethnicity, there are high number of reports by Hispanic residents in their 20s through 40s. Second highest number of victims is White then Black.
+
+<br>
+
+# **Conclusion**
+From the EDA displayed, there are a higher number of crime reports in the warmer months than colder months. This would be interesting to look into as for what possible factors could be contributing to that.
+In the areas with the highest rate of crime, theft from vehicle and vehicle theft is pretty common. 
+As for victim demographics, younger women and older men report more crime. There are also a significantly high number of Hispanic victims. 
+
+<br>
