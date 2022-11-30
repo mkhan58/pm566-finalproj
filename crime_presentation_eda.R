@@ -271,16 +271,6 @@ victim_demographics <-
                      victim_demographics$`Victim Age` >= 91 & victim_demographics$`Victim Age`<= 100 ~ "91-100"))
 
 
-Crime %in% c("VEHICLE - STOLEN", 
-             "VANDALISM - FELONY ($400 & OVER, ALL CHURCH VANDALISMS)",
-             "THEFT PLAIN - PETTY ($950 & UNDER)",
-             "THEFT FROM MOTOR VEHICLE - PETTY ($950 & UNDER)",
-             "SEX OFFENDER REGISTRANT OUT OF COMPLIANCE",
-             "INTIMATE PARTNER - SIMPLE ASSAULT",
-             "INDECENT EXPOSURE",
-             "CRIMINAL THREATS - NO WEAPON DISPLAYED",
-             "BURGLARY FROM VEHICLE",
-             "BATTERY - SIMPLE ASSAULT"))
 
 
 
