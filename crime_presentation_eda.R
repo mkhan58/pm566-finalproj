@@ -61,7 +61,10 @@ month_crime <- month_crime %>% layout(title = "Months with the Highest Crime in 
 month_crime_plotly <- ggplotly(month_crime)
 month_crime_plotly 
 
-### EDA: Histogram of Victims
+#############################
+#############################
+#############################
+###Histogram of Victims
 #Create df
 victim_demographics <-
   crimedat %>%
@@ -109,42 +112,10 @@ vict_demo <- vict_demo %>% layout(title = "Histogram of Victim's Age and Gender"
 vict_demo_plotly <- ggplotly(vict_demo)
 vict_demo_plotly
 
-#Plot 1
-#crime_frequency <-count(crimedat, Area)
-p1 <- ggplot(ncrimesdate, aes(x = Month, y = n, color = Area)) + geom_line() + geom_point(size = .5, alpha = 0.5)
-ggplotly(p1)
-#FIX: date occurred -> filter
 
-p2 <- ggplot(ncrimes, aes(x = Crime, y = Area, color = Area)) + geom_line() + geom_point(size = .5, alpha = 0.5)
-ggplotly(p2)
-#FIX: pick top 5 crimes
-
-
-
-#Subset of overall crime number per area
-crime_frequency <- count(crimedat, Area)
-
-
-#Other EDA
-#Testing: area vs crime
-p3 <- crime_frequency %>%
-  ggplot( aes(Area, n, size = n, color=Area)) +
-  geom_point() +
-  theme_bw()
-#FIX: pick top 5 areas, too scrunched
-
-#Testing: date vs crime
-value <- crime_frequency$n
-q <- crimedat %>%
-  ggplot( aes(x=Month, y=Crime)) +
-  geom_area(fill="#69b3a2", alpha=0.5) +
-  geom_line(color="#69b3a2") +
-  ylab("count") 
-#doesn't work
-
-
-
-#### MAP EDA
+#############################
+#############################
+#############################
 #Central
 detach(package:dplyr)
 library(dplyr)
@@ -193,6 +164,70 @@ central_map <-
 central_map
 
 
+
+#####################
+#Plot 1
+##TESTING
+
+ncrimes <-
+  crimedat %>%
+  group_by(Area, `Crime Code`, Crime, Year) %>%
+  summarise(
+    n = n()
+  ) %>%
+  arrange(Area, desc(n)) 
+
+
+ncrimes <- subset(ncrimes,
+                      Area %in% c("Central", "77th Street", "Pacific", "Southwest", "Hollywood") &
+                        Year %in% c("2020", "2021") &
+                    `Crime Code` %in% c("330", "510", "624", "230", "210", "626", "740", "440"))
+
+#Crimes per Top Areas
+top_crime <- ncrimes %>% 
+  plot_ly(x = ~Crime, y = ~n,
+          type = 'scatter',
+          mode = 'markers',
+          color = ~Area,
+          sizes = c(5, 70),
+          marker = list(sizemode='diameter', opacity=0.5))
+top_crime <- top_crime %>% layout(title = "Most Common Crime in Top Areas")
+top_crime_plotly <- ggplotly(top_crime)
+top_crime_plotly
+
+p2 <- ggplot(ncrimes, aes(x = Crime, y = Area, color = Area)) + geom_line() + geom_point(size = .5, alpha = 0.5)
+ggplotly(p2)
+#FIX: pick top 5 crimes
+
+
+
+#Subset of overall crime number per area
+crime_frequency <- count(crimedat, Area)
+
+
+#Other EDA
+#Testing: area vs crime
+p3 <- crime_frequency %>%
+  ggplot( aes(Area, n, size = n, color=Area)) +
+  geom_point() +
+  theme_bw()
+#FIX: pick top 5 areas, too scrunched
+
+#Testing: date vs crime
+value <- crime_frequency$n
+q <- crimedat %>%
+  ggplot( aes(x=Month, y=Crime)) +
+  geom_area(fill="#69b3a2", alpha=0.5) +
+  geom_line(color="#69b3a2") +
+  ylab("count") 
+#doesn't work
+
+
+
+#### MAP EDA
+
+
+
 #####################################
 ##PROF CODE
 ncrimes <-
@@ -236,6 +271,16 @@ victim_demographics <-
                      victim_demographics$`Victim Age` >= 91 & victim_demographics$`Victim Age`<= 100 ~ "91-100"))
 
 
+Crime %in% c("VEHICLE - STOLEN", 
+             "VANDALISM - FELONY ($400 & OVER, ALL CHURCH VANDALISMS)",
+             "THEFT PLAIN - PETTY ($950 & UNDER)",
+             "THEFT FROM MOTOR VEHICLE - PETTY ($950 & UNDER)",
+             "SEX OFFENDER REGISTRANT OUT OF COMPLIANCE",
+             "INTIMATE PARTNER - SIMPLE ASSAULT",
+             "INDECENT EXPOSURE",
+             "CRIMINAL THREATS - NO WEAPON DISPLAYED",
+             "BURGLARY FROM VEHICLE",
+             "BATTERY - SIMPLE ASSAULT"))
 
 
 
