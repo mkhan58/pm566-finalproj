@@ -109,7 +109,7 @@ top_crime_plotly
 
 ### Tab 3
 ```{r echo=FALSE}
-central_map
+central_map 
 ```
 
 ### Tab 4
