@@ -62,7 +62,7 @@ central_map <-
   leaflet(central_top_crimes) %>%  
   addProviderTiles('CartoDB.Positron') %>% 
   addCircles(
-    lat = ~Lat, 
+    lat = ~Lat,  
     lng = ~Lon,
     label = ~paste0(central_top_crimes$`Crime`),
     color = ~ central.pal(central_top_crimes$`Crime`),
