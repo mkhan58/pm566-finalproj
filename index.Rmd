@@ -116,18 +116,65 @@ victim_demographics %>%
 
 ```
 
+```{r}
+### LEAFLET MAP PLOT OF CENTRAL 
+central_top_crimes <-
+  crimedat %>%
+  select(`Record No`, `Crime Code`, Area, Crime, `Year`, `Lat`, `Lon`)
+
+#Subset Area = Central and Year = 2021
+central_top_crimes <- subset(central_top_crimes, 
+                             `Area` %in% c("Central") &
+                               `Year` %in% c("2021"))
+
+#View top 5 crimes in Central
+central_top_crimes %>% 
+  group_by(Area, `Crime Code`, Crime) %>%
+  summarise(Count = n()) %>%
+  arrange(desc(Count)) %>%
+  head(,10) %>%
+  knitr::kable()
+
+#Now subset Crime Code to top 5 in that area
+central_top_crimes <- subset(central_top_crimes, 
+                             `Crime Code` %in% c("330", "624", "740", "230", "440"))
+
+#Map color palette
+central.pal <- colorFactor(c('red', 'yellow', 'blue', 'green', 'purple'), domain = central_top_crimes$`Crime`)
+
+central_map <- 
+  leaflet(central_top_crimes) %>%  
+  addProviderTiles('CartoDB.Positron') %>% 
+  addCircles(
+    lat = ~Lat, 
+    lng = ~Lon,
+    label = ~paste0(central_top_crimes$`Crime`),
+    color = ~ central.pal(central_top_crimes$`Crime`),
+    opacity = 0.5,
+    fillOpacity = 1,
+    radius = 5
+  ) %>%
+  addLegend('bottomleft', 
+            pal = central.pal,  
+            values = central_top_crimes$`Crime`,
+            title = 'Central Crime Map', 
+            opacity = 1)
+central_map
+```
+
+
 ## Showcasing plots {.tabset}
 
 ### Tab 1
 
 ```{r echo=FALSE}
-month.ordered
-``` 
+central_map
+```  
 
 ### Tab 2
 
 ```{r echo=FALSE}
-victim_demographics
+#victim_demographics
 ```
 
 ## {-}
