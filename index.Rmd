@@ -11,7 +11,7 @@ This is my PM566 Final Project website.
 
 <br>
 
-# Lab setup
+# Question: What is crime like in Los Angeles from 2020-2021 (in terms of highest crime month, victim demographics, and top crimes)?
 
 ```{r setup, message=FALSE, echo=FALSE, warning=FALSE}
 library(data.table)
