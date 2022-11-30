@@ -10,7 +10,7 @@ navbar:
       href: https://github.com/USCbiostats/PM566
     - text: "PM566 Home"
       href: https://uscbiostats.github.io/PM566/
-output:
+output: 
   html_document:
     theme: cosmo
     include:
