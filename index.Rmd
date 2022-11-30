@@ -35,84 +35,14 @@ opts_chunk$set(
 
 ```
 
-```{r}
+```{r, echo = FALSE}
 source("pm566-midterm-final-copy.R")
 
-#EDA Crime with the highest count per month
-crime_count_month <-  
-  crimedat %>%
-  group_by(Month, Year, Area) %>% 
-  summarize(CrimeCount = n()) 
-
-crime_count_month <- subset(crime_count_month, 
-                            Year %in% c("2020", "2021")) #2022 is still in progress
-
-#Order months in order for graph
-month.ordered <- 
-  crime_count_month %>%
-  mutate(Month = factor(Month, levels = c("Jan", "Feb", "Mar", "Apr", "May",  "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")))
-
-month.ordered  %>%
-  ggplot(aes(x = Month, y = CrimeCount, fill = Area)) +
-  geom_bar(stat = "identity")
-
-#Age, ethnicity, sex
-#Create df
-victim_demographics <-
-  crimedat %>%
-  select(`Record No`, `Crime Code`,`Victim Age`, `Victim Sex`, `Victim Ethnicity` , Area, Crime, `Year`)
-
-#For simplicity
-victim_demographics <- subset(victim_demographics, 
-                              `Victim Sex` %in% c("F", "M") &
-                                `Victim Ethnicity`  %in% c("B", "H", "W", "A", "O"))
-
-#Age
-victim_demographics %>%
-  ggplot(mapping = aes(x = `Victim Age`)) + 
-  geom_histogram(position = "identity", alpha = 0.7, binwidth = 1, color = "black", fill = "red") +
-  scale_x_continuous(breaks = scales::pretty_breaks(n = 20)) +
-  ggtitle("Victim Age Distribution") +
-  xlab("Age") +
-  ylab("Count")
-
-#Sex
-victim_demographics %>%
-  ggplot(aes(x=`Victim Age`, color= `Victim Sex`)) +
-  geom_histogram(fill="white", alpha=0.2, position="identity") +
-  scale_x_continuous(breaks = scales::pretty_breaks(n = 20)) 
-
-#Ethnicity
-victim_demographics <-
-  victim_demographics %>%
-  mutate(victim_ethnicity_f = case_when(victim_demographics$`Victim Ethnicity` == "W" ~ "White",
-                                        victim_demographics$`Victim Ethnicity` == "B" ~ "Black",
-                                        victim_demographics$`Victim Ethnicity` == "A" ~ "Asian",
-                                        victim_demographics$`Victim Ethnicity` == "H" ~ "Hispanic",
-                                        victim_demographics$`Victim Ethnicity` == "O" ~ "Other"))
-
-victim_demographics <-
-  victim_demographics %>%
-  mutate(victim_age_f = 
-           case_when(victim_demographics$`Victim Age` >= 0 & victim_demographics$`Victim Age`<= 10 ~ "0-10",
-                     victim_demographics$`Victim Age` >= 11 & victim_demographics$`Victim Age`<= 20 ~ "11-20",
-                     victim_demographics$`Victim Age` >= 21 & victim_demographics$`Victim Age`<= 30 ~ "21-30",
-                     victim_demographics$`Victim Age` >= 31 & victim_demographics$`Victim Age`<= 40 ~ "31-40",
-                     victim_demographics$`Victim Age` >= 41 & victim_demographics$`Victim Age`<= 50 ~ "41-50",
-                     victim_demographics$`Victim Age` >= 51 & victim_demographics$`Victim Age`<= 60 ~ "51-60",
-                     victim_demographics$`Victim Age` >= 61 & victim_demographics$`Victim Age`<= 70 ~ "61-70",
-                     victim_demographics$`Victim Age` >= 71 & victim_demographics$`Victim Age`<= 80 ~ "71-80",
-                     victim_demographics$`Victim Age` >= 81 & victim_demographics$`Victim Age`<= 90 ~ "81-90",
-                     victim_demographics$`Victim Age` >= 91 & victim_demographics$`Victim Age`<= 100 ~ "91-100"))
-
-victim_demographics %>%
-  ggplot(mapping = aes(x = victim_age_f, fill = factor(victim_ethnicity_f))) + 
-  geom_bar(position = "dodge") +
-  scale_fill_brewer(palette = "Paired") +
-  ggtitle("Victim Ethnicity by Age") +
-  xlab("Count") +
-  ylab("Age") +
-  labs(fill = "Victim Ethnicity")
+g1 = plot_ly(ncrimesdate, x = ~Month, y = ~n, color = ~Area, type = "bar")
+g1 <- g1 %>% layout(yaxis = list(title = 'Count'), barmode = 'stack')
+g1 <- g1 %>% layout(title = "Months with the Highest Crime in the Top 5 Areas")
+g1_plotly <- ggplotly(g1)
+g1_plotly 
 
 ```
 
@@ -174,7 +104,7 @@ central_map
 ### Tab 2
 
 ```{r echo=FALSE}
-#victim_demographics
+g1_plotly 
 ```
 
 ## {-}
