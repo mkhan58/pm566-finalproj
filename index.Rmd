@@ -1,5 +1,5 @@
 ---
-title: "Los Angeles Crime 2020-2021"
+title: "Los Angeles Crime"
 author: "Misha Khan"
 output: 
     html_document:
@@ -10,13 +10,13 @@ output:
 <br>
 
 # **Introduction**
-For my final project, I selected Los Angeles crime dataset from 2020-2021 to examine local areas with the highest crime,  most common crime, and victim demographics. The original dataset has over 500,000 observations and 19 variables that describe the date, time, crime, weapon, victim, and location. In this presentation, I have displayed the time of year with the highest crime, most common crimes in top areas, and victim demographic breakdown.
+For my final project, I selected Los Angeles crime dataset starting from 2020 to examine local areas with the highest crime,  most common crime, and victim demographics. The original dataset has over 500,000 observations and 29 variables that describe the date, time, crime, weapon, victim, and location. In this presentation, I have displayed the time of year with the highest crime, most common crimes in top areas, and victim demographic breakdown.
 
 <br>
 
 # **Data Cleaning**
 ### Removing and Reformatting Columns
-The dataset I used was in a .csv file. I renamed the columns and dropped 10 columns that were not relevant for analysis. Then, I reformatted date and time variables to extract month and year and to use them as variables. I also kept 2022 for certain analysis but removed it when it came to examining time analysis since the year is not over yet.
+The dataset I used was in a .csv file. I renamed the columns and dropped 10 columns that were not relevant for analysis. Then, I reformatted date and time variables to extract month and year and to use them as variables. Since the year is not over, I removed 2022 for certain time related EDA/analysis.
 
 <br>
 
@@ -27,12 +27,12 @@ As for coordinates, there were 2,266 coordinates that are (0,0) due to privacy r
 
 ### Empty Cells and Negative Values
 Victim Age had negative values, 0's (meaning not available), and an oddly high value of 120. For simplicity, I filtered age from 0-100 to exclude negative values. This step discarded 25 rows.
-The variables Weapon, Victim Sex, and Victim Ethnicity had thousands of empty cells. For Victim Sex and Ethnicity, I replaced it with NA instead of dropping it because of the amount of observations. I assumed that the information was not given. As for weapon, I assigned the empty cells to "NONE" meaning that no weapon was used.
+The variables Weapon, Victim Sex, and Victim Ethnicity had thousands of empty cells. For Victim Sex and Ethnicity, I replaced it with NA instead of dropping it. I assumed that the empty cells meant that the information was not given. As for weapon, I assigned the empty cells to "NONE" meaning that no weapon was used.
 
 <br>
 
 ### After Cleaning
-After data cleaning, the process removed 2,291 rows. The crimedat dataset now has 584,004 observations and 21 variables.
+After data cleaning, the process removed 2,291 rows. The crimedat dataset now has 584,004 observations and 21 variables. For further analysis, I subsetted the data to top 5 areas with the highest crime because of how large the dataset is.
 
 <br>
 
@@ -75,7 +75,7 @@ month_crime_plotly <- ggplotly(month_crime)
 month_crime_plotly 
 ``` 
 ## {-}
-Like mentioned before, 2022 is excluded from this analysis since the year is not over. I selected the top 5 areas with the highest crime and saw that January to June, there are a little under 10,000 reports. In the warmer months, the reports increase over 10,000 and then drop again in November and December.
+Like mentioned before, 2022 is excluded from this analysis since the year is not over. Focusing on thetop 5 areas with the highest crime, I saw that January to June there are a little under 10,000 reports. However, in the warmer months, the reports increase over 10,000 and then drop again in November and December.
 
 <br>
 
@@ -95,7 +95,7 @@ month_crime_plotly <- ggplotly(month_crime)
 top_crime_plotly 
 ``` 
 ## {-}
-Once again, I focused on the top 5 areas with the highest crimes. There are two dots for the sum of each year (2020 and 2021). Across the plot, the highest points are from the areas 77th Street and Central. There are over 1,500 reports of burglary from vehicle and vehicle stolen.
+There are two dots per area for each year (2020 and 2021). Across the plot, the highest points (blue and orange) are from the areas 77th Street and Central. There are over 1,500 reports of burglary from vehicle and vehicle stolen.
 
 <br>
 
@@ -144,14 +144,14 @@ vict_demo_eth_plotly
 
 ## {-}
 
-From the histogram, there is a noticeable spike in younger women (mid 20s) reporting crimes compared to men. However after 30s, there are more men reporting crime than women. 
+From the histogram, there is a noticeable spike in women in their 20s reporting crimes compared to men. However after 30s, there are more men reporting crime than women. 
 When examining victim's ethnicity, there are high number of reports by Hispanic residents in their 20s through 40s. Second highest number of victims is White then Black.
 
 <br>
 
 # **Conclusion**
-From the EDA displayed, there are a higher number of crime reports in the warmer months than colder months. This would be interesting to look into as for what possible factors could be contributing to that.
-In the areas with the highest rate of crime, theft from vehicle and vehicle theft is pretty common. 
-As for victim demographics, younger women and older men report more crime. There are also a significantly high number of Hispanic victims. 
+From the EDA displayed, there are a higher number of crime reports in the warmer months than colder months. This would be interesting to look into as for what possible factors could be possibly contributing to that.
+In the areas with the highest rate of crime, theft from vehicle and vehicle theft is pretty common in the areas of 77th Street and Central. 
+As for victim demographics, younger women, older men, and Hispanics report more crime. 
 
 <br>
