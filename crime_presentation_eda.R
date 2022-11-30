@@ -183,7 +183,7 @@ ncrimes <- subset(ncrimes,
                         Year %in% c("2020", "2021") &
                     `Crime Code` %in% c("330", "510", "624", "230", "210", "626", "740", "440"))
 
-#Crimes per Top Areas
+#Crimes per Top Areas 
 top_crime <- ncrimes %>% 
   plot_ly(x = ~Crime, y = ~n,
           type = 'scatter',
