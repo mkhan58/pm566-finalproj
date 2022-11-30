@@ -38,12 +38,29 @@ opts_chunk$set(
 ```{r, echo = FALSE}
 source("pm566-midterm-final-copy.R")
 
-g1 = plot_ly(ncrimesdate, x = ~Month, y = ~n, color = ~Area, type = "bar")
-g1 <- g1 %>% layout(yaxis = list(title = 'Count'), barmode = 'stack')
-g1 <- g1 %>% layout(title = "Months with the Highest Crime in the Top 5 Areas")
-g1_plotly <- ggplotly(g1)
-g1_plotly 
+#Viz 1: Months with the Highest Crime in the Top 5 Areas
+month_crime = plot_ly(ncrimesdate, x = ~Month, y = ~n, color = ~Area, type = "bar")
+month_crime <- month_crime %>% layout(yaxis = list(title = 'Count'), barmode = 'stack')
+month_crime <- month_crime %>% layout(title = "Months with the Highest Crime in the Top 5 Areas")
+month_crime_plotly <- ggplotly(month_crime)
+month_crime_plotly 
 
+
+
+#Viz 2: Victim Age and Sex
+#Interactive Histogram
+vict_demo <-plot_ly(victim_demographics, x = ~victim_age_f, color = ~`Victim Sex`) %>%
+  add_histogram()
+#vict_demo <- vict_demo %>% layout(barmode = "overlay")
+vict_demo <- vict_demo %>% layout(title = "Histogram of Victim's Age and Gender",
+                                  yaxis = list(
+                                    title = "Count"
+                                  ),
+                                  xaxis = list(
+                                    title = "Age"
+                                  ))
+vict_demo_plotly <- ggplotly(vict_demo)
+vict_demo_plotly
 ```
 
 ```{r}
@@ -104,7 +121,11 @@ central_map
 ### Tab 2
 
 ```{r echo=FALSE}
-g1_plotly 
+month_crime_plotly  
 ```
 
+### Tab 3
+```{r echo=FALSE}
+vict_demo_plotly
+```
 ## {-}
