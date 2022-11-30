@@ -1,6 +1,6 @@
 name: "my-website"
 output_dir: "."
-navbar:
+navbar: 
   title: "PM566 Project: Los Angeles Crime 2020-2021"
   type: inverse
   left:
@@ -9,8 +9,8 @@ navbar:
   right:
     - icon: fa-github fa-lg
       href: https://github.com/USCbiostats/PM566
-    - text: "PM566 Home"
-      href: https://uscbiostats.github.io/PM566/
+    - text: "My Repository"
+      href: https://github.com/mkhan58/pm566-finalproj
 output: 
   html_document:
     theme: haddock
