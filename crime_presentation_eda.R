@@ -174,6 +174,52 @@ central_map <-
             opacity = 1)
 central_map
 
+
+
+#Creating a new df to subset for 77th Street
+st77_top_crimes  <-
+  crimedat %>%
+  select(`Record No`, `Crime Code`, Area, Crime, `Year`, `Lat`, `Lon`)
+
+#Subset Area = 77th Street and Year = 2021
+st77_top_crimes <- subset(st77_top_crimes, 
+                          `Area` %in% c("77th Street") &
+                            `Year` %in% c("2021"))
+
+#View top 5 crimes in Central
+st77_top_crimes %>% 
+  group_by(Area, `Crime Code`, Crime) %>%
+  summarise(Count = n()) %>%
+  arrange(desc(Count)) %>%
+  head(,10) 
+
+#Now subset Crime Code to top 5 in that area
+st77_top_crimes <- subset(st77_top_crimes, 
+                          `Crime Code` %in% c("510", "230", "624", "626", "210"))
+
+st77.pal <- colorFactor(c('red', 'yellow', 'blue', 'green', 'purple'), domain = st77_top_crimes$`Crime`)
+
+st77_map <- 
+  leaflet(st77_top_crimes) %>%  
+  addProviderTiles('CartoDB.Positron') %>% 
+  addCircles(
+    lat = ~Lat, 
+    lng = ~Lon,
+    label = ~paste0(st77_top_crimes$`Crime`),
+    color = ~ st77.pal(st77_top_crimes$`Crime`),
+    opacity = 0.5,
+    fillOpacity = 1,
+    radius = 5
+  ) %>%
+  addLegend('bottomleft', 
+            pal = st77.pal,  
+            values = st77_top_crimes$`Crime`,
+            title = '77th Street Map', 
+            opacity = 1)
+
+
+#Barplot
+v1 <- table(crimedat$`Area`)
 #####################
 #Plot 1
 ##TESTING

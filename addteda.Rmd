@@ -1,0 +1,106 @@
+---
+title: "Additional EDA"
+author: "Misha Khan"
+date: "2022-12-02"
+output: html_document
+---
+
+
+```{r setup, message=FALSE, echo=FALSE, warning=FALSE}
+library(data.table)
+library(tidyverse)
+library(dplyr)
+library(plotly)
+library(DT)
+library(knitr)
+
+# Initialize code chunk options
+opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  eval=TRUE,
+  echo = TRUE,
+  cache = FALSE,
+  fig.width = 7, 
+  fig.align = 'center',
+  fig.asp = 0.618,
+  out.width = "700px")
+
+source("crime_presentation_eda.R")
+```
+
+## Calculate proportion of crime per area
+```{r, message=FALSE, echo=FALSE, warning=FALSE}
+barplot(sort(v1, T)[1:10], las = 2, col = rainbow(12), cex.names= .7, main = "Top 10 Areas with Crime", xlab = "Area", ylab = "Count")
+```
+```{r, message=FALSE, echo=FALSE, warning=FALSE}
+v1
+```
+
+
+<br>
+
+## Central Map
+```{r, message=FALSE, echo=FALSE, warning=FALSE}
+#Map color palette
+central.pal <- colorFactor(c('red', 'yellow', 'blue', 'green', 'purple'), domain = central_top_crimes$`Crime`)
+
+central_map <- 
+  leaflet(central_top_crimes) %>%  
+  addProviderTiles('CartoDB.Positron') %>% 
+  addCircles(
+    lat = ~Lat, 
+    lng = ~Lon,
+    label = ~paste0(central_top_crimes$`Crime`),
+    color = ~ central.pal(central_top_crimes$`Crime`),
+    opacity = 0.5,
+    fillOpacity = 1,
+    radius = 5
+  ) %>%
+  addLegend('bottomleft', 
+            pal = central.pal,  
+            values = central_top_crimes$`Crime`,
+            title = 'Central Crime Map', 
+            opacity = 1)
+```
+```{r, message=FALSE, echo=FALSE, warning=FALSE}
+central_map
+```
+
+<br>
+
+## 77th Street Map
+```{r, message=FALSE, echo=FALSE, warning=FALSE}
+
+st77.pal <- colorFactor(c('red', 'yellow', 'blue', 'green', 'purple'), domain = st77_top_crimes$`Crime`)
+
+st77_map <- 
+  leaflet(st77_top_crimes) %>%  
+  addProviderTiles('CartoDB.Positron') %>% 
+  addCircles(
+    lat = ~Lat, 
+    lng = ~Lon,
+    label = ~paste0(st77_top_crimes$`Crime`),
+    color = ~ st77.pal(st77_top_crimes$`Crime`),
+    opacity = 0.5,
+    fillOpacity = 1,
+    radius = 5
+  ) %>%
+  addLegend('bottomleft', 
+            pal = st77.pal,  
+            values = st77_top_crimes$`Crime`,
+            title = '77th Street Map', 
+            opacity = 1)
+```
+
+```{r, message=FALSE, echo=FALSE, warning=FALSE}
+st77_map
+```
+
+<br>
+
+
+```{r}
+
+```
+
