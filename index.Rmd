@@ -70,7 +70,7 @@ month_crime_plotly <- ggplotly(month_crime)
 ```
 
 #### Bar Chart {.tabset}
-
+ 
 ```{r, message=FALSE, echo=FALSE, warning=FALSE}
 month_crime_plotly 
 ``` 
