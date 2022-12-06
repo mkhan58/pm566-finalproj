@@ -1,10 +1,12 @@
 ---
 title: "Los Angeles Crime"
 author: "Misha Khan"
-output: 
-    html_document:
-        toc: TRUE
-        toc_float: TRUE
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    toc: yes
+    toc_float: yes
 ---
 
 <br>
@@ -24,7 +26,7 @@ Data source: https://data.lacity.org/Public-Safety/Crime-Data-from-2020-to-Prese
 First, I renamed the columns and dropped 10 columns that were not relevant for analysis. Then, I reformatted date and time variables to extract month and year and to use them as variables. Since the year is not over, I removed 2022 for certain time related EDA/analysis.
 
 ```{r reformat, message=FALSE, echo=FALSE, warning=FALSE}
-source("pm566-midterm-final-copy.R")
+#source("pm566-midterm-final-copy.R")
 
 library(stringr)
 library(dplyr)

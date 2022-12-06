@@ -11,7 +11,7 @@ library(data.table)
 library(tidyverse)
 library(dplyr)
 library(plotly)
-library(DT)
+library(DT) 
 library(knitr)
 
 # Initialize code chunk options
