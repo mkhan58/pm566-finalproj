@@ -198,7 +198,7 @@ st77_top_crimes <- subset(st77_top_crimes,
                           `Crime Code` %in% c("510", "230", "624", "626", "210"))
 
 st77.pal <- colorFactor(c('red', 'yellow', 'blue', 'green', 'purple'), domain = st77_top_crimes$`Crime`)
-
+ 
 st77_map <- 
   leaflet(st77_top_crimes) %>%  
   addProviderTiles('CartoDB.Positron') %>% 

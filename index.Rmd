@@ -10,24 +10,124 @@ output:
 <br>
 
 # **Introduction**
-For my final project, I selected Los Angeles crime dataset starting from 2020 to examine local areas with the highest crime,  most common crime, and victim demographics. The original dataset has over 500,000 observations and 29 variables that describe the date, time, crime, weapon, victim, and location. In this presentation, I have displayed the time of year with the highest crime, most common crimes in top areas, and victim demographic breakdown.
+For my final project, I selected Los Angeles crime dataset starting from 2020. Because
+Los Angeles is known for having higher crime rates than most populated cities, I thought
+it would be interesting to examine local areas with the highest crime, most common crime, and victim demographics. 
+The original dataset is a .csv file that comes from Los Angeles Open Data website. The dimensions are 586,295 observations and 28 variables that describe the date, time, crime, weapon, victim, and location. 
+
+Data source: https://data.lacity.org/Public-Safety/Crime-Data-from-2020-to-Present/2nrs-mtv8 
 
 <br>
 
 # **Data Cleaning**
 ### Removing and Reformatting Columns
-The dataset I used was in a .csv file. I renamed the columns and dropped 10 columns that were not relevant for analysis. Then, I reformatted date and time variables to extract month and year and to use them as variables. Since the year is not over, I removed 2022 for certain time related EDA/analysis.
+First, I renamed the columns and dropped 10 columns that were not relevant for analysis. Then, I reformatted date and time variables to extract month and year and to use them as variables. Since the year is not over, I removed 2022 for certain time related EDA/analysis.
+
+```{r reformat, message=FALSE, echo=FALSE, warning=FALSE}
+source("pm566-midterm-final-copy.R")
+
+library(stringr)
+library(dplyr)
+library(tidyverse)
+library(rvest)
+library(xml2)
+library(dbplyr)
+library(dplyr)
+library(skimr) 
+library(ggplot2)
+library(data.table)
+library(lubridate)
+library(leaflet)
+library(webshot)
+library(rapportools)
+library(lubridate)
+library(dtplyr)
+
+crimeraw <- read.csv("Crime_Data_from_2020_to_Present.csv")
+
+#Rename the columns to be more descriptive
+colnames(crimeraw) <- c('Record No',
+                        'Date Reported',
+                        'Date Occurred',
+                        'Time Occurred',
+                        'Area No',
+                        'Area',
+                        'Rpt Dist No', 
+                        'Part', 
+                        'Crime Code',
+                        'Crime',
+                        'MO', 
+                        'Victim Age',
+                        'Victim Sex',
+                        'Victim Ethnicity',
+                        'Premise Code',
+                        'Premise', 
+                        'Weapon Code',
+                        'Weapon',
+                        'Case Code',
+                        'Case Status',
+                        'Crime Code 1',
+                        'Crime Code 2',
+                        'Crime Code 3',
+                        'Crime Code 4',
+                        'Location',
+                        'Cross Street',
+                        'Lat',
+                        'Lon'
+                        )
+
+#Drop unwanted columns
+crimeraw <- select(crimeraw, -c('Rpt Dist No','Part', 'MO','Premise', 'Crime Code 1', 'Crime Code 2', 'Crime Code 3', 'Crime Code 4', 'Cross Street'))
+```
+
+```{r date, message=FALSE, echo=FALSE, warning=FALSE}
+#Reformat date variables
+crimeraw$`Date Reported` <- as.Date(crimeraw$`Date Reported`, format = "%m/%d/%Y")
+crimeraw$`Date Occurred` <- as.Date(crimeraw$`Date Occurred`, format = "%m/%d/%Y")
+
+#Change miltary to standard time
+crimeraw$`Time Occurred` <- format(strptime(substr(as.POSIXct(sprintf("%04.0f", crimeraw$`Time Occurred`), 
+                                 format="%H%M"), 12, 16), '%H:%M'), '%I:%M %p')
+```
 
 <br>
 
 ### Examining Coordinates
-As for coordinates, there were 2,266 coordinates that are (0,0) due to privacy reasons. I decided to drop these rows since the dataset is already large and it would not affect analysis.
+For coordinates, there were 2,266 coordinates that were (0,0) due to privacy reasons. I dropped these rows since the dataset is already large and it would not affect analysis.
+
+```{r coord, message=FALSE, echo=FALSE, warning=FALSE}
+#Drop (0,0) coordinates
+sum(crimeraw$Lat == 0)
+sum(crimeraw$Lon == 0)
+crimeraw <- subset(crimeraw, Lat != 0, Lon != 0)
+```
 
 <br>
 
 ### Empty Cells and Negative Values
 Victim Age had negative values, 0's (meaning not available), and an oddly high value of 120. For simplicity, I filtered age from 0-100 to exclude negative values. This step discarded 25 rows.
 The variables Weapon, Victim Sex, and Victim Ethnicity had thousands of empty cells. For Victim Sex and Ethnicity, I replaced it with NA instead of dropping it. I assumed that the empty cells meant that the information was not given. As for weapon, I assigned the empty cells to "NONE" meaning that no weapon was used.
+
+```{r age, message=FALSE, echo=FALSE, warning=FALSE}
+#Examine Victim Age
+summary(crimeraw$`Victim Age`)
+crimeraw <-
+  crimeraw %>%
+  filter(`Victim Age` >= 0 & `Victim Age` <= 100)
+```
+
+```{r na1, message=FALSE, echo=FALSE, warning=FALSE}
+#Replace empty cells with NA values
+crimeraw$Weapon[is.empty(crimeraw$Weapon)] <- "NONE"
+crimeraw$`Victim Sex`[is.empty(crimeraw$`Victim Sex`)] <- NA
+crimeraw$`Victim Ethnicity`[is.empty(crimeraw$`Victim Ethnicity`)] <- NA
+crimeraw$`Victim Age`[crimeraw$`Victim Age` == 0] <- NA
+```
+
+```{r na2, message=FALSE, echo=FALSE, warning=FALSE}
+#Replace missing cells in Weapon Code with 999 to signify no weapon
+crimeraw$`Weapon Code` <- crimeraw$`Weapon Code` %>% replace_na(999)
+```
 
 <br>
 
@@ -38,7 +138,7 @@ After data cleaning, the process removed 2,291 rows. The crimedat dataset now ha
 
 # **EDA**
 ## When does the most crime occur?
-```{r setup, message=FALSE, echo=FALSE, warning=FALSE}
+```{r, message=FALSE, echo=FALSE, warning=FALSE}
 library(data.table)
 library(tidyverse)
 library(dplyr)
@@ -75,18 +175,23 @@ month_crime_plotly <- ggplotly(month_crime)
 month_crime_plotly 
 ``` 
 ## {-}
-Like mentioned before, 2022 is excluded from this analysis since the year is not over. Focusing on thetop 5 areas with the highest crime, I saw that January to June there are a little under 10,000 reports. However, in the warmer months, the reports increase over 10,000 and then drop again in November and December.
+
+Like mentioned before, 2022 is excluded from this analysis since the year is not over. The EDA above contains two outputs per area for the total number of reports in 2020 and 2021. Focusing on the top 5 areas with the highest crime, I saw that January to June there are a little under 10,000 reports. However, in the warmer months, the reports increase over 10,000 and then drop again in November and December.
 
 <br>
 
 ## What are the most common crimes?
 ```{r, message=FALSE, echo=FALSE, warning=FALSE}
-#Viz 1: Months with the Highest Crime in the Top 5 Areas
-source("crime_presentation_eda.R")
-month_crime = plot_ly(ncrimesdate, x = ~Month, y = ~n, color = ~Area, type = "bar")
-month_crime <- month_crime %>% layout(yaxis = list(title = 'Count'), barmode = 'stack')
-month_crime <- month_crime %>% layout(title = "Months with the Highest Crime in the Top 5 Areas")
-month_crime_plotly <- ggplotly(month_crime)
+#Viz 2: Most Common Crimes
+top_crime <- ncrimes %>% 
+  plot_ly(x = ~Crime, y = ~n,
+          type = 'scatter',
+          mode = 'markers',
+          color = ~Area,
+          sizes = c(5, 70),
+          marker = list(sizemode='diameter', opacity=0.5))
+top_crime <- top_crime %>% layout(title = "Most Common Crime in Top Areas")
+top_crime_plotly <- ggplotly(top_crime)
 ```
 
 #### Scatter Plot {.tabset}
@@ -94,6 +199,7 @@ month_crime_plotly <- ggplotly(month_crime)
 ```{r, message=FALSE, echo=FALSE, warning=FALSE}
 top_crime_plotly 
 ``` 
+
 ## {-}
 There are two dots per area for each year (2020 and 2021). Across the plot, the highest points (blue and orange) are from the areas 77th Street and Central. There are over 1,500 reports of burglary from vehicle and vehicle stolen.
 
@@ -144,14 +250,16 @@ vict_demo_eth_plotly
 
 ## {-}
 
-From the histogram, there is a noticeable spike in women in their 20s reporting crimes compared to men. However after 30s, there are more men reporting crime than women. 
-When examining victim's ethnicity, there are high number of reports by Hispanic residents in their 20s through 40s. Second highest number of victims is White then Black.
+As for victim demographics, younger women, older men, and Hispanics report more crime.
 
 <br>
 
 # **Conclusion**
-From the EDA displayed, there are a higher number of crime reports in the warmer months than colder months. This would be interesting to look into as for what possible factors could be possibly contributing to that.
-In the areas with the highest rate of crime, theft from vehicle and vehicle theft is pretty common in the areas of 77th Street and Central. 
-As for victim demographics, younger women, older men, and Hispanics report more crime. 
+From the EDA displayed, there are a higher number of crime reports in the warmer months than colder months. The highest number of reports is in August while the lowest number of reports is in Aprils. This would be interesting to look into as for what possible factors could be possibly contributing to that.
+
+In the areas with the highest rate of crime, theft from vehicle and vehicle theft is the most common. The highest rates of crime occur in 77th Street and Central areas. 77th Street has 1,765 reports of vehicle stolen and Central has 1,660 reports of theft from vehicle in 2021.
+
+From the histogram, there is a noticeable spike in women in their 20s reporting crimes compared to men. However after 30s, there are more men reporting crime than women. 
+When examining victim's ethnicity, there are high number of reports by Hispanic residents in their 20s through 40s. Second highest number of victims is White then Black.
 
 <br>

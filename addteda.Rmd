@@ -1,4 +1,4 @@
----
+--- 
 title: "Additional EDA"
 author: "Misha Khan"
 date: "2022-12-02"
@@ -37,10 +37,12 @@ barplot(sort(v1, T)[1:10], las = 2, col = rainbow(12), cex.names= .7, main = "To
 v1
 ```
 
+This bar chart displays the proportion of crime in the top 10 areas in Los Angeles. Central and 77th Street are significantly higher than the rest.
 
 <br>
 
-## Central Map
+## Examining the Crime in the Top 2 Areas in Los Angeles 
+### Central Map
 ```{r, message=FALSE, echo=FALSE, warning=FALSE}
 #Map color palette
 central.pal <- colorFactor(c('red', 'yellow', 'blue', 'green', 'purple'), domain = central_top_crimes$`Crime`)
@@ -67,9 +69,11 @@ central_map <-
 central_map
 ```
 
+This is a map of top 5 crimes in Central area. There is a noticeable amount of blue dots which is the top reported crime, burglary from vehicle.
+
 <br>
 
-## 77th Street Map
+### 77th Street Map
 ```{r, message=FALSE, echo=FALSE, warning=FALSE}
 
 st77.pal <- colorFactor(c('red', 'yellow', 'blue', 'green', 'purple'), domain = st77_top_crimes$`Crime`)
@@ -97,10 +101,10 @@ st77_map <-
 st77_map
 ```
 
+This is a map of top 5 crimes in 77th Street area. There is a noticeable amount of purple dots which is the top reported crime, vehicle stolen.
+
 <br>
 
 
-```{r}
 
-```
 
