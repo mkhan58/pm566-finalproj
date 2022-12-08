@@ -26,7 +26,6 @@ Data source: https://data.lacity.org/Public-Safety/Crime-Data-from-2020-to-Prese
 First, I renamed the columns and dropped 10 columns that were not relevant for analysis. Then, I reformatted date and time variables to extract month and year and to use them as variables. Since the year is not over, I removed 2022 for certain time related EDA/analysis.
 
 ```{r reformat, message=FALSE, echo=FALSE, warning=FALSE}
-#source("pm566-midterm-final-copy.R")
 
 library(stringr)
 library(dplyr)
@@ -99,8 +98,6 @@ For coordinates, there were 2,266 coordinates that were (0,0) due to privacy rea
 
 ```{r coord, message=FALSE, echo=FALSE, warning=FALSE}
 #Drop (0,0) coordinates
-sum(crimeraw$Lat == 0)
-sum(crimeraw$Lon == 0)
 crimeraw <- subset(crimeraw, Lat != 0, Lon != 0)
 ```
 
@@ -112,7 +109,6 @@ The variables Weapon, Victim Sex, and Victim Ethnicity had thousands of empty ce
 
 ```{r age, message=FALSE, echo=FALSE, warning=FALSE}
 #Examine Victim Age
-summary(crimeraw$`Victim Age`)
 crimeraw <-
   crimeraw %>%
   filter(`Victim Age` >= 0 & `Victim Age` <= 100)
@@ -160,12 +156,15 @@ opts_chunk$set(
   fig.asp = 0.618,
   out.width = "700px")
 
+crimedat <- read_rds("crimedatfinal.rds")
+crimedat <- as.data.frame(crimedat)
+source("crime_presentation_eda.R")
 ```
 
-```{r, message=FALSE, echo=FALSE, warning=FALSE}
+```{r viz 1, message=FALSE, echo=FALSE, warning=FALSE}
 #Viz 1: Months with the Highest Crime in the Top 5 Areas
-source("crime_presentation_eda.R")
-month_crime = plot_ly(ncrimesdate, x = ~Month, y = ~n, color = ~Area, type = "bar")
+
+month_crime = plot_ly(ncrimesdate, x = ~Month, y = ~population, color = ~Area, type = "bar")
 month_crime <- month_crime %>% layout(yaxis = list(title = 'Count'), barmode = 'stack')
 month_crime <- month_crime %>% layout(title = "Months with the Highest Crime in the Top 5 Areas")
 month_crime_plotly <- ggplotly(month_crime)
@@ -173,7 +172,7 @@ month_crime_plotly <- ggplotly(month_crime)
 
 #### Bar Chart {.tabset}
  
-```{r, message=FALSE, echo=FALSE, warning=FALSE}
+```{r viz 1 output, message=FALSE, echo=FALSE, warning=FALSE}
 month_crime_plotly 
 ``` 
 ## {-}
@@ -183,10 +182,10 @@ Like mentioned before, 2022 is excluded from this analysis since the year is not
 <br>
 
 ## What are the most common crimes?
-```{r, message=FALSE, echo=FALSE, warning=FALSE}
+```{r viz 2, message=FALSE, echo=FALSE, warning=FALSE}
 #Viz 2: Most Common Crimes
 top_crime <- ncrimes %>% 
-  plot_ly(x = ~Crime, y = ~n,
+  plot_ly(x = ~Crime, y = ~population,
           type = 'scatter',
           mode = 'markers',
           color = ~Area,
@@ -198,7 +197,7 @@ top_crime_plotly <- ggplotly(top_crime)
 
 #### Scatter Plot {.tabset}
 
-```{r, message=FALSE, echo=FALSE, warning=FALSE}
+```{r viz 2 output, message=FALSE, echo=FALSE, warning=FALSE}
 top_crime_plotly 
 ``` 
 
@@ -208,7 +207,8 @@ There are two dots per area for each year (2020 and 2021). Across the plot, the 
 <br>
 
 ## What is the demographic breakdown of victims?
-```{r, message=FALSE, echo=FALSE, warning=FALSE}
+
+```{r viz 3.1, message=FALSE, echo=FALSE, warning=FALSE}
 #Viz 3: Victim Age and Sex
 vict_demo <-plot_ly(victim_demographics, x = ~victim_age_f, color = ~`Victim Sex`) %>%
   add_histogram()
@@ -222,7 +222,7 @@ vict_demo <- vict_demo %>% layout(title = "Histogram of Victim's Age and Gender"
 vict_demo_plotly <- ggplotly(vict_demo)
 ```
 
-```{r, message=FALSE, echo=FALSE, warning=FALSE}
+```{r viz 3.2, message=FALSE, echo=FALSE, warning=FALSE}
 #Viz 4: Victim Age and Ethnicity
 vict_demo_eth <-plot_ly(victim_demographics, x = ~victim_age_f, color = ~`Victim Ethnicity`) %>%
   add_histogram()
@@ -240,13 +240,13 @@ vict_demo_eth_plotly <- ggplotly(vict_demo_eth)
 
 ### Victim Sex
 
-```{r echo=FALSE}
+```{r viz 3 output 1, echo=FALSE}
 vict_demo_plotly
 ```  
 
 ### Victim Ethnicity
 
-```{r echo=FALSE}
+```{r viz 3 output 2, echo=FALSE}
 vict_demo_eth_plotly 
 ```
 
@@ -257,11 +257,11 @@ As for victim demographics, younger women, older men, and Hispanics report more 
 <br>
 
 # **Conclusion**
-From the EDA displayed, there are a higher number of crime reports in the warmer months than colder months. The highest number of reports is in August while the lowest number of reports is in Aprils. This would be interesting to look into as for what possible factors could be possibly contributing to that.
+From the EDA displayed, there are a higher number of crime reports in the warmer months than colder months. The highest number of reports is in August while the lowest number of reports is in Aprils. This would be interesting to look into as for what possible factors could be possibly contributing to that. Correlation is not causation but it is an pattern to note.
 
-In the areas with the highest rate of crime, theft from vehicle and vehicle theft is the most common. The highest rates of crime occur in 77th Street and Central areas. 77th Street has 1,765 reports of vehicle stolen and Central has 1,660 reports of theft from vehicle in 2021.
+The areas with the highest crime rate in Los Angeles are 77th Street, Central, Hollywood, Pacific, and Southwest. In these areas, theft from vehicle and vehicle theft are the most common crimes. The highest rates of crime occur in 77th Street and Central areas. In 2021, 77th Street has 1,765 reports of vehicle stolen and Central has 1,660 reports of theft from vehicle. This can be useful to keep in mind if one is in the area.
 
-From the histogram, there is a noticeable spike in women in their 20s reporting crimes compared to men. However after 30s, there are more men reporting crime than women. 
-When examining victim's ethnicity, there are high number of reports by Hispanic residents in their 20s through 40s. Second highest number of victims is White then Black.
+From the histogram, there is a noticeable spike in women in their 20s reporting crimes compared to men. However after 30s, there are more men reporting crime than women. This is an interesting observation that they are a trend of younger women and older men reporting crimes.
+When examining victim's ethnicity, there are high number of reports by Hispanic residents in their 20s through 40s. This is probably due to Los Angeles having a mostly Hispanic population. The second highest number of victims is White people then Black people. With further analysis, it would be compelling to see the breakdown of the type of crime being reported by each demographic.
 
 <br>

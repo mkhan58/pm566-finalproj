@@ -1,5 +1,4 @@
 #Crime Presentation EDA
-
 library(data.table)
 library(tidyverse)
 library(dplyr)
@@ -23,48 +22,61 @@ opts_chunk$set(
   fig.align = 'center',
   fig.asp = 0.618,
   out.width = "700px")
-  
+
 crimedat <- read_rds("crimedatfinal.rds")
 crimedat <- as.data.frame(crimedat)
 
-
-#### EDA: Months with the Highest Crime in the Top 5 Areas
-#Subset dataset
+##INDEX
+#Viz 1
 ncrimesdate <-
   crimedat %>%
   group_by(Area, Month, Year) %>%
   summarise(
-    n = n()
-  ) %>%
-  arrange(Area, desc(n))
+    population = n()
+  )
 
 #Subset to top 5 areas and only 2020 and 2021 data
 #Central, 77th Street, Pacific, Southwest, Hollywood
 ncrimesdate <- subset(ncrimesdate,
                       Area %in% c("Central", "77th Street", "Pacific", "Southwest", "Hollywood") &
-                      Year %in% c("2020", "2021"))
+                        Year %in% c("2020", "2021"))
 
 #Order by month
 ncrimesdate <- 
   ncrimesdate %>%
   mutate(Month = factor(Month, levels = c("Jan", "Feb", "Mar", "Apr", "May",  "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")))
 
-#Order by rank (doesn't work)
+#Order by rank
 ncrimesdate <- 
   ncrimesdate %>%
   mutate(Area = factor(Area, levels = c("Central", "77th Street", "Pacific", "Southwest", "Hollywood")))
-         
-#Months with the Highest Crime in the Top 5 Areas
-month_crime = plot_ly(ncrimesdate, x = ~Month, y = ~n, color = ~Area, type = "bar")
-month_crime <- month_crime %>% layout(yaxis = list(title = 'Count'), barmode = 'stack')
-month_crime <- month_crime %>% layout(title = "Months with the Highest Crime in the Top 5 Areas")
-month_crime_plotly <- ggplotly(month_crime)
-month_crime_plotly 
 
-#############################
-#############################
-#############################
-###Histogram of Victims
+
+#Viz 2: Most Common Crimes
+ncrimes <-
+  crimedat %>%
+  group_by(Area, `Crime Code`, Crime, Year) %>%
+  summarise(
+    population = n()
+  ) 
+
+
+ncrimes <- subset(ncrimes,
+                  Area %in% c("Central", "77th Street", "Pacific", "Southwest", "Hollywood") &
+                    Year %in% c("2020", "2021") &
+                    `Crime Code` %in% c("330", "510", "624", "230", "210", "626", "740", "440"))
+
+top_crime <- ncrimes %>% 
+  plot_ly(x = ~Crime, y = ~population,
+          type = 'scatter',
+          mode = 'markers',
+          color = ~Area,
+          sizes = c(5, 70),
+          marker = list(sizemode='diameter', opacity=0.5))
+top_crime <- top_crime %>% layout(title = "Most Common Crime in Top Areas")
+top_crime_plotly <- ggplotly(top_crime)
+
+#Viz 3
 #Create df
 victim_demographics <-
   crimedat %>%
@@ -97,38 +109,20 @@ victim_demographics <-
                      victim_demographics$`Victim Age` >= 81 & victim_demographics$`Victim Age`<= 90 ~ "81-90",
                      victim_demographics$`Victim Age` >= 91 & victim_demographics$`Victim Age`<= 100 ~ "91-100"))
 
-#EDA 2: Victim Age and Sex
-#Interactive Histogram
-vict_demo <-plot_ly(victim_demographics, x = ~victim_age_f, color = ~`Victim Sex`) %>%
-  add_histogram()
-#vict_demo <- vict_demo %>% layout(barmode = "overlay")
-vict_demo <- vict_demo %>% layout(title = "Histogram of Victim's Age and Gender",
-                                  yaxis = list(
-                                    title = "Count"
-                                  ),
-                                  xaxis = list(
-                                    title = "Age"
-                                  ))
-vict_demo_plotly <- ggplotly(vict_demo)
-vict_demo_plotly
 
-###EDA Victim Age and Ethnicity
-#Viz 4: Victim Age and Sex
-vict_demo_eth <-plot_ly(victim_demographics, x = ~victim_age_f, color = ~`Victim Ethnicity`) %>%
-  add_histogram()
-vict_demo_eth <- vict_demo_eth %>% layout(title = "Histogram of Victim's Age and Ethnicity",
-                                  yaxis = list(
-                                    title = "Count"
-                                  ),
-                                  xaxis = list(
-                                    title = "Age"
-                                  ))
-vict_demo_eth_plotly <- ggplotly(vict_demo_eth)
+#ADDT EDA
+#Barchart
+crime_frequency <-count(crimedat, Area)
+nc <- sum(crime_frequency$n)
 
+crime_frequency %>% 
+  arrange(desc(n)) %>%
+  mutate(Percent = round( n / nc * 100, 2))  %>%
+  knitr::kable()
 
-#############################
-#############################
-#############################
+v1 <- table(crimedat$`Area`)
+barplot(sort(v1, T)[1:10], las = 2, col = rainbow(12), cex.names= .7, main = "Top 10 Areas with Crime", xlab = "Area", ylab = "Count")
+
 #Central
 detach(package:dplyr)
 library(dplyr)
@@ -146,7 +140,9 @@ central_top_crimes <- subset(central_top_crimes,
 central_top_crimes %>% 
   group_by(Area, `Crime Code`, Crime) %>%
   summarise(Count = n()) %>%
-  arrange(desc(Count))
+  arrange(desc(Count)) %>%
+  head(,10) %>%
+  knitr::kable()
 
 #Now subset Crime Code to top 5 in that area
 central_top_crimes <- subset(central_top_crimes, 
@@ -174,7 +170,7 @@ central_map <-
             opacity = 1)
 central_map
 
-
+#EDA 2 77th Street
 
 #Creating a new df to subset for 77th Street
 st77_top_crimes  <-
@@ -191,14 +187,15 @@ st77_top_crimes %>%
   group_by(Area, `Crime Code`, Crime) %>%
   summarise(Count = n()) %>%
   arrange(desc(Count)) %>%
-  head(,10) 
+  head(,10) %>%
+  knitr::kable()
 
 #Now subset Crime Code to top 5 in that area
 st77_top_crimes <- subset(st77_top_crimes, 
                           `Crime Code` %in% c("510", "230", "624", "626", "210"))
 
 st77.pal <- colorFactor(c('red', 'yellow', 'blue', 'green', 'purple'), domain = st77_top_crimes$`Crime`)
- 
+
 st77_map <- 
   leaflet(st77_top_crimes) %>%  
   addProviderTiles('CartoDB.Positron') %>% 
@@ -216,37 +213,5 @@ st77_map <-
             values = st77_top_crimes$`Crime`,
             title = '77th Street Map', 
             opacity = 1)
-
-
-#Barplot
-v1 <- table(crimedat$`Area`)
-#####################
-#Plot 1
-##TESTING
-
-ncrimes <-
-  crimedat %>%
-  group_by(Area, `Crime Code`, Crime, Year) %>%
-  summarise(
-    n = n()
-  ) %>%
-  arrange(Area, desc(n)) 
-
-
-ncrimes <- subset(ncrimes,
-                      Area %in% c("Central", "77th Street", "Pacific", "Southwest", "Hollywood") &
-                        Year %in% c("2020", "2021") &
-                    `Crime Code` %in% c("330", "510", "624", "230", "210", "626", "740", "440"))
-
-#Crimes per Top Areas 
-top_crime <- ncrimes %>% 
-  plot_ly(x = ~Crime, y = ~n,
-          type = 'scatter',
-          mode = 'markers',
-          color = ~Area,
-          sizes = c(5, 70),
-          marker = list(sizemode='diameter', opacity=0.5))
-top_crime <- top_crime %>% layout(title = "Most Common Crime in Top Areas")
-top_crime_plotly <- ggplotly(top_crime)
-top_crime_plotly
+st77_map
 
