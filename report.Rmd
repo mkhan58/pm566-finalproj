@@ -2,6 +2,7 @@
 title: "PM566 Report: Los Angeles Crime"
 author: "Misha Khan"
 date: "2022-12-08"
+output:
    pdf_document: default
    html_document: FALSE
 ---

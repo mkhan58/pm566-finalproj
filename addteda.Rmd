@@ -34,7 +34,7 @@ source("crime_presentation_eda.R")
 barplot(sort(v1, T)[1:10], las = 2, col = rainbow(12), cex.names= .7, main = "Top 10 Areas with Crime", xlab = "Area", ylab = "Count")
 ```
 ```{r, message=FALSE, echo=FALSE, warning=FALSE}
-v1
+#v1
 ```
 
 This bar chart displays the proportion of crime in the top 10 areas in Los Angeles. Central and 77th Street are significantly higher than the rest.
