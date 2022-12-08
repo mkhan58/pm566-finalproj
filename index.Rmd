@@ -45,7 +45,6 @@ library(lubridate)
 library(dtplyr)
 
 crimeraw <- read.csv("Crime_Data_from_2020_to_Present.csv")
-
 #Rename the columns to be more descriptive
 colnames(crimeraw) <- c('Record No',
                         'Date Reported',
@@ -137,34 +136,23 @@ After data cleaning, the process removed 2,291 rows. The crimedat dataset now ha
 # **EDA**
 ## When does the most crime occur?
 ```{r, message=FALSE, echo=FALSE, warning=FALSE}
-library(data.table)
+#library(data.table)
 library(tidyverse)
 library(dplyr)
 library(plotly)
 library(DT)
 library(knitr)
 
-# Initialize code chunk options
-opts_chunk$set(
-  warning = FALSE,
-  message = FALSE,
-  eval=TRUE,
-  echo = TRUE,
-  cache = FALSE,
-  fig.width = 7, 
-  fig.align = 'center',
-  fig.asp = 0.618,
-  out.width = "700px")
 
-crimedat <- read_rds("crimedatfinal.rds")
-crimedat <- as.data.frame(crimedat)
+
+#crimedat <- read_rds("crimedatfinal.rds")
+#crimedat <- as.data.frame(crimedat)
 source("crime_presentation_eda.R")
 ```
 
 ```{r viz 1, message=FALSE, echo=FALSE, warning=FALSE}
 #Viz 1: Months with the Highest Crime in the Top 5 Areas
-
-month_crime = plot_ly(ncrimesdate, x = ~Month, y = ~population, color = ~Area, type = "bar")
+month_crime <- plot_ly(ncrimesdate, x = ~Month, y = ~population, color = ~Area, type = "bar")
 month_crime <- month_crime %>% layout(yaxis = list(title = 'Count'), barmode = 'stack')
 month_crime <- month_crime %>% layout(title = "Months with the Highest Crime in the Top 5 Areas")
 month_crime_plotly <- ggplotly(month_crime)

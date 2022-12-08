@@ -2,7 +2,7 @@
 library(data.table)
 library(tidyverse)
 library(dplyr)
-library(plotly)
+library(plotly) 
 library(knitr)
 library(widgetframe)
 library(gapminder)
@@ -32,7 +32,7 @@ ncrimesdate <-
   crimedat %>%
   group_by(Area, Month, Year) %>%
   summarise(
-    population = n()
+    population = dplyr::n()
   )
 
 #Subset to top 5 areas and only 2020 and 2021 data
@@ -57,7 +57,7 @@ ncrimes <-
   crimedat %>%
   group_by(Area, `Crime Code`, Crime, Year) %>%
   summarise(
-    population = n()
+    population = dplyr::n()
   ) 
 
 
@@ -124,8 +124,8 @@ v1 <- table(crimedat$`Area`)
 barplot(sort(v1, T)[1:10], las = 2, col = rainbow(12), cex.names= .7, main = "Top 10 Areas with Crime", xlab = "Area", ylab = "Count")
 
 #Central
-detach(package:dplyr)
-library(dplyr)
+#detach(package:dplyr)
+#library(dplyr)
 #Creating a new df to subset for Central
 central_top_crimes <-
   crimedat %>%
@@ -139,10 +139,8 @@ central_top_crimes <- subset(central_top_crimes,
 #View top 5 crimes in Central
 central_top_crimes %>% 
   group_by(Area, `Crime Code`, Crime) %>%
-  summarise(Count = n()) %>%
-  arrange(desc(Count)) %>%
-  head(,10) %>%
-  knitr::kable()
+  summarise(Count = dplyr::n()) %>%
+  arrange(desc(Count)) 
 
 #Now subset Crime Code to top 5 in that area
 central_top_crimes <- subset(central_top_crimes, 
@@ -185,10 +183,8 @@ st77_top_crimes <- subset(st77_top_crimes,
 #View top 5 crimes in Central
 st77_top_crimes %>% 
   group_by(Area, `Crime Code`, Crime) %>%
-  summarise(Count = n()) %>%
-  arrange(desc(Count)) %>%
-  head(,10) %>%
-  knitr::kable()
+  summarise(Count = dplyr::n()) %>%
+  arrange(desc(Count)) 
 
 #Now subset Crime Code to top 5 in that area
 st77_top_crimes <- subset(st77_top_crimes, 
