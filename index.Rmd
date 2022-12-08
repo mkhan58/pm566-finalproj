@@ -19,6 +19,9 @@ The original dataset is a .csv file that comes from Los Angeles Open Data websit
 
 Data source: https://data.lacity.org/Public-Safety/Crime-Data-from-2020-to-Present/2nrs-mtv8 
 
+Link to my pdf: [Report](https://github.com/mkhan58/pm566-finalproj/blob/main/report.pdf)       [[Download]](https://github.com/mkhan58/pm566-finalproj/raw/main/report.pdf)
+<br>
+
 <br>
 
 # **Data Cleaning**
@@ -134,7 +137,7 @@ After data cleaning, the process removed 2,291 rows. The crimedat dataset now ha
 <br>
 
 # **EDA**
-## When does the most crime occur?
+## Where and when does the most crime occur?
 ```{r, message=FALSE, echo=FALSE, warning=FALSE}
 #library(data.table)
 library(tidyverse)
@@ -165,7 +168,8 @@ month_crime_plotly
 ``` 
 ## {-}
 
-Like mentioned before, 2022 is excluded from this analysis since the year is not over. The EDA above contains two outputs per area for the total number of reports in 2020 and 2021. Focusing on the top 5 areas with the highest crime, I saw that January to June there are a little under 10,000 reports. However, in the warmer months, the reports increase over 10,000 and then drop again in November and December.
+Like mentioned before, 2022 is excluded from this analysis since the year is not over. This bar chart displays the proportion of crime in the top 10 areas in Los Angeles. Central and 77th Street are ranked significantly higher than the rest.
+As for when does crime occur the most, the EDA above contains two outputs per area for the total number of reports in 2020 and 2021. Focusing on the top 5 areas with the highest crime, I saw that January to June there are a little under 10,000 reports. However, in the warmer months, the reports increase over 10,000 and then drop again in November and December.
 
 <br>
 
@@ -245,7 +249,7 @@ As for victim demographics, younger women, older men, and Hispanics report more 
 <br>
 
 # **Conclusion**
-From the EDA displayed, there are a higher number of crime reports in the warmer months than colder months. The highest number of reports is in August while the lowest number of reports is in Aprils. This would be interesting to look into as for what possible factors could be possibly contributing to that. Correlation is not causation but it is an pattern to note.
+The areas with the highest crime reports are 77th Street and Central.For when the does the most crime occur, there are a higher number of crime reports in the warmer months than colder months. The highest number of reports is in August while the lowest number of reports is in Aprils. This would be interesting to look into as for what possible factors could be possibly contributing to that. Correlation is not causation but it is an pattern to note.
 
 The areas with the highest crime rate in Los Angeles are 77th Street, Central, Hollywood, Pacific, and Southwest. In these areas, theft from vehicle and vehicle theft are the most common crimes. The highest rates of crime occur in 77th Street and Central areas. In 2021, 77th Street has 1,765 reports of vehicle stolen and Central has 1,660 reports of theft from vehicle. This can be useful to keep in mind if one is in the area.
 
